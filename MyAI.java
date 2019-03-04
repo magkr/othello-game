@@ -7,6 +7,8 @@ import java.util.ArrayList;
  */
 public class MyAI implements IOthelloAI{
 
+	private int p;
+
 	/**
 	 *
 	 */
@@ -19,6 +21,7 @@ public class MyAI implements IOthelloAI{
 
  	private Position miniMax(GameState s) {
  		//System.out.println("max: " + s.getPlayerInTurn() + " player turn");
+		p = s.getPlayerInTurn();
  		ArrayList<Position> moves = s.legalMoves();
  		int v = Integer.MIN_VALUE;
  		Position res = new Position(-1,-1);
@@ -72,9 +75,8 @@ public class MyAI implements IOthelloAI{
 
  	private int utility(GameState s) {
  		int[] tokens = s.countTokens();
- 		int p = s.getPlayerInTurn();
- 		int pt1 =  (p == 1 ? tokens[0] : tokens[1]);
- 		int pt2 =  (p == 2 ? tokens[1] : tokens[0]);
+ 		int pt1 = (p == 1 ? tokens[0] : tokens[1]);
+ 		int pt2 = (p == 1 ? tokens[1] : tokens[0]);
 
  		if(pt1 > pt2) return 1;
  		else if (pt1 == pt2) return 0;
