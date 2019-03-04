@@ -6,30 +6,30 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * GUI to show the Othello game and to listen for input for the user/human player. When it is the user's turn, 
- * (s)he clicks on the place where (s)he wants to place a token, and when it is the computer's turn, the 
+ * GUI to show the Othello game and to listen for input for the user/human player. When it is the user's turn,
+ * (s)he clicks on the place where (s)he wants to place a token, and when it is the computer's turn, the
  * player needs to click anywhere in the frame to make the computer take it's turn. The user is made aware
- * of any illegal moves, or when (s)he - or the computer - have to pass because no legal moves are possible.  
+ * of any illegal moves, or when (s)he - or the computer - have to pass because no legal moves are possible.
  * @author Mai Ajspur
  * @version 9.2.2018
  */
 public class OthelloGUI extends JComponent implements MouseListener
 {
-    static final long 	serialVersionUID = 1234567890;
+  static final long 	serialVersionUID = 1234567890;
 	static final int 	imgSize = 100;
-	
+
 	private GameState state;		// The state of the game
     private int size;				// Number of rows and columns on the board
     private boolean humanPlayer;	// Whether a human player is playing or not
     private IOthelloAI ai1;			// The AI for player 1 if there are no human player
-    private IOthelloAI ai2;			// The AI for player 2 
+    private IOthelloAI ai2;			// The AI for player 2
 
     // Images for drawing the game board
     private Image 		part, blackPion, whitePion, background;
     private Image 		border_left, border_right, border_top, border_bottom;
     private Image 		corner_left_top, corner_left_bottom, corner_right_top, corner_right_bottom;
     private Image 		blackWon, whiteWon, tie;
-	
+
     /**
      * Initializes game
      * @param player1 The AI for player 1 (black); this argument is ignored if there is indeed a human player.
@@ -54,7 +54,7 @@ public class OthelloGUI extends JComponent implements MouseListener
     	blackWon = ImageIO.read(new File("imgs/blackWon.png"));
     	whiteWon = ImageIO.read(new File("imgs/whiteWon.png"));
     	tie = ImageIO.read(new File("imgs/tie.png"));
-		
+
     	this.size = size;
     	this.state = new GameState(size, 1); // Player 1 (human if there is any) goes first
     	this.humanPlayer = humanPlayer;
@@ -70,8 +70,8 @@ public class OthelloGUI extends JComponent implements MouseListener
     public void paint(Graphics g){
 		int[][] gameBoard = state.getBoard();
     	this.setDoubleBuffered(true);
-    	Insets in = getInsets();               
-    	g.translate(in.left, in.top);            
+    	Insets in = getInsets();
+    	g.translate(in.left, in.top);
 
     	for (int c = 0; c < size; c++){
     		for (int r = 0; r < size; r++){
@@ -84,8 +84,8 @@ public class OthelloGUI extends JComponent implements MouseListener
     				g.drawImage(blackPion, imgSize+imgSize*c, imgSize+imgSize*r, this);
     			g.drawImage(part, imgSize+imgSize*c, imgSize+imgSize*r, this);
     			if (c == 0){
-    				g.drawImage(border_left, 0, imgSize+imgSize*r, this); 
-    				g.drawImage(border_right, size*imgSize+imgSize, imgSize+imgSize*r, this); 
+    				g.drawImage(border_left, 0, imgSize+imgSize*r, this);
+    				g.drawImage(border_right, size*imgSize+imgSize, imgSize+imgSize*r, this);
     			}
     		}
     		g.drawImage(border_top, imgSize+imgSize*c, 0, this);
@@ -95,7 +95,7 @@ public class OthelloGUI extends JComponent implements MouseListener
     	g.drawImage(corner_left_bottom, 0, size*imgSize+imgSize, this);
     	g.drawImage(corner_right_top, imgSize+imgSize*size, 0, this);
     	g.drawImage(corner_right_bottom, imgSize+imgSize*size, size*imgSize+imgSize, this);
-		
+
     	if ( state.isFinished() ){
     		int[] tokens = state.countTokens();
     		if ( tokens[0] > tokens[1] )
@@ -104,7 +104,7 @@ public class OthelloGUI extends JComponent implements MouseListener
     			g.drawImage(whiteWon, size*imgSize/2-(imgSize/2), size*imgSize/2+(imgSize/4), this);
     		else
     			g.drawImage(tie, size*imgSize/2-(imgSize/2), size*imgSize/2+(imgSize/4), this);
-    	}		
+    	}
     }
 
     public void mouseClicked(MouseEvent e){
@@ -119,25 +119,25 @@ public class OthelloGUI extends JComponent implements MouseListener
    					if ( humanPlayer ){ // If there is a human involved, (s)he needs to know this
    	  					boolean canMoveAfterwards = !state.legalMoves().isEmpty();
    	   					if ( canMoveAfterwards ){
-   	   						String message = currentPlayer == 1 ? "Your opponent has no legal moves. It is your turn again." 
+   	   						String message = currentPlayer == 1 ? "Your opponent has no legal moves. It is your turn again."
    	   													 	    : "You have no legal moves. Your opponent will make another move (click again).";
    	   						JOptionPane.showMessageDialog(this, message);
-   	   					}  						
+   	   					}
    					}
    				}
  			}
-   			else 
-   				illegalMoveAttempted(place); 		
+   			else
+   				illegalMoveAttempted(place);
     		repaint();
     	}
     }
-    
+
     /**
      * Get a position to place the next token (i.e. read mouse click if human
      * player is in turn, otherwise ask corresponding AI)
      */
     private Position getPlaceForNextToken(MouseEvent e){
-    	if ( state.getPlayerInTurn() == 2 ) 
+    	if ( state.getPlayerInTurn() == 2 )
 			return ai2.decideMove(state);
 		else {
 			if ( humanPlayer )
@@ -148,35 +148,34 @@ public class OthelloGUI extends JComponent implements MouseListener
     }
 
     /**
-     * Display message for when an illegal move has been attempted 
+     * Display message for when an illegal move has been attempted
      */
     private void illegalMoveAttempted(Position place){
     	int currentPlayer = state.getPlayerInTurn();
     	if ( humanPlayer && currentPlayer == 1 )
     		JOptionPane.showMessageDialog(this, "That is not a legal move (position " + place +"). Try again.");
 		else {
-			JOptionPane.showMessageDialog(this, "The AI for player "+ currentPlayer + 
+			JOptionPane.showMessageDialog(this, "The AI for player "+ currentPlayer +
 				(currentPlayer == 1 ? " (black)" : " (white)") + " chose an invalid "
-   				+ "move (position " + place +"). Please debug!", "Invalid Move", JOptionPane.ERROR_MESSAGE); 		
+   				+ "move (position " + place +"). Please debug!", "Invalid Move", JOptionPane.ERROR_MESSAGE);
 		}
     }
-    
+
     /**
      * Translate the given clicks on the screen to a position on the game board
      */
     private Position humanSelectedPlace(MouseEvent e){
     	int x = e.getX();
     	int y = e.getY();
-    	if ( imgSize <= x && x <= imgSize*(size+1) && imgSize <= y && y <= imgSize*(size+1) ){ 
+    	if ( imgSize <= x && x <= imgSize*(size+1) && imgSize <= y && y <= imgSize*(size+1) ){
     		return new Position((x-imgSize)/imgSize, (y-imgSize)/imgSize);
     	}
     	return new Position(-1,-1);
     }
 
-    // Not used methods from the interface of MouseListener 
+    // Not used methods from the interface of MouseListener
     public void mouseEntered(MouseEvent e){}
     public void mouseExited(MouseEvent e){}
     public void mousePressed(MouseEvent e){}
     public void mouseReleased(MouseEvent e){}
 }
-
