@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  *
@@ -20,51 +22,68 @@ public class MyAI implements IOthelloAI{
  	}
 
  	private Position miniMax(GameState s) {
- 		//System.out.println("max: " + s.getPlayerInTurn() + " player turn");
 		p = s.getPlayerInTurn();
- 		ArrayList<Position> moves = s.legalMoves();
+
+		Set<Position> moves = new HashSet<Position>(s.legalMoves());
+
  		int v = Integer.MIN_VALUE;
+		int alpha = Integer.MIN_VALUE;
+		int beta = Integer.MAX_VALUE;
+
  		Position res = new Position(-1,-1);
+
  		for(Position p : moves) {
- 			//System.out.println(p);
  			GameState state = new GameState(s.getBoard(), s.getPlayerInTurn());
- 				int m = minValue(result(state, p));
- 				//System.out.println(m);
- 				if(m > v) {
- 					res = p;
- 					v = m;
- 				}
+			int m = minValue(result(state, p),alpha,beta);
+			if(m > v) {
+				res = p;
+				v = m;
+			}
+
  		}
+
  		return res;
  	}
 
- 	private int minValue(GameState s) {
- 		//System.out.println("min: " + s.getPlayerInTurn() + " player turn");
+ 	private int minValue(GameState s, int alpha, int beta) {
  		if(s.isFinished()) return utility(s);
- 		ArrayList<Position> moves = s.legalMoves();
+
+		Set<Position> moves = new HashSet<Position>(s.legalMoves());
+
  		if(moves.isEmpty()) {
  			s.changePlayer();
- 			return maxValue(s);
+ 			return maxValue(s,alpha,beta);
  		}
- 		int v = Integer.MAX_VALUE;
- 		for(Position p : moves) {
- 			v = Math.min(v, maxValue(result(s, p)));
+
+		int v = Integer.MAX_VALUE;
+
+		for(Position p : moves) {
+ 			v = Math.min(v, maxValue(result(s, p),alpha,beta));
+			if(v <= alpha) return v;
+			beta = Math.min(beta, v);
  		}
+
  		return v;
  	}
 
- 	private int maxValue(GameState s) {
- 		//System.out.println("max: " + s.getPlayerInTurn() + " player turn");
+ 	private int maxValue(GameState s, int alpha, int beta) {
  		if(s.isFinished()) return utility(s);
- 		ArrayList<Position> moves = s.legalMoves();
+
+		Set<Position> moves = new HashSet<Position>(s.legalMoves());
+
  		if(moves.isEmpty()) {
  			s.changePlayer();
- 			return minValue(s);
+ 			return minValue(s,alpha,beta);
  		}
+
  		int v = Integer.MIN_VALUE;
+
  		for(Position p : moves) {
- 			v = Math.max(v, minValue(result(s, p)));
+ 			v = Math.max(v, minValue(result(s, p),alpha,beta));
+			if(v >= beta) return v;
+			alpha = Math.max(alpha, v);
  		}
+
  		return v;
  	}
 
@@ -75,12 +94,8 @@ public class MyAI implements IOthelloAI{
 
  	private int utility(GameState s) {
  		int[] tokens = s.countTokens();
- 		int pt1 = (p == 1 ? tokens[0] : tokens[1]);
- 		int pt2 = (p == 1 ? tokens[1] : tokens[0]);
-
- 		if(pt1 > pt2) return 1;
- 		else if (pt1 == pt2) return 0;
- 		else return -1;
+ 		int playerTokens = (p == 1 ? tokens[0] : tokens[1]);
+		return playerTokens;
  	}
 
 }
